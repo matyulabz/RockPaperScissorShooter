@@ -1,0 +1,32 @@
+class is SpriteSceneWithEntities imports cape imports cave imports motion #mainScene:
+
+var bg as TextureSprite
+var playButton as TextButtonEntity
+var height as double
+var width as double
+
+func initialize override
+{
+	base.initialize()
+	height = getReferenceHeight()
+	width = getReferenceWidth()
+	bg = addTextureSpriteForSize(createTextureForImageResource("bg"), width, height)
+	bg.move(0, 0)
+	playButton = TextButtonEntity.forText("PLAY")
+	playButton.setBackgroundColor(Color.forRGB(255, 0, 0))
+	addEntity(playButton)
+	playButton.move(0.5 * width - playButton.getWidth() * 0.5, 0.75 * height)
+	playButton.setClickHandler(func {
+		startGame()
+	})
+}
+
+func startGame
+{
+	pushScene(new GameScene())
+}
+
+func cleanup override
+{
+	removeAllSprites()
+}

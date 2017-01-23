@@ -1,0 +1,120 @@
+class is SpriteSceneWithEntities imports cape imports cave imports motion:
+
+var backButton as TextButtonEntity
+var player as PlayerEntity
+var left as TextureSprite
+var right as TextureSprite
+var height as double
+var width as double
+// var pressedLeft = false
+// var pressedRight = false
+
+func initialize override
+{
+	base.initialize()
+	height = getReferenceHeight()
+	width = getReferenceWidth()
+	backButton = TextButtonEntity.forText("QUIT")
+	backButton.setBackgroundColor(Color.forRGB(255, 0, 0))
+	addEntity(backButton)
+	backButton.move(0, 0)
+	backButton.setClickHandler(func {
+		quitGame()
+	})
+	left = addTextureSpriteForSize(createTextureForImageResource("left_unclicked"), 0.125 * width, 0.125 * height)
+	right = addTextureSpriteForSize(createTextureForImageResource("right_unclicked"), 0.125 * width, 0.125 * height)
+	player = new PlayerEntity()
+	addEntity(player)
+	left.move(0, height - left.getHeight())
+	right.move(left.getWidth(), height - left.getHeight())
+}
+
+func quitGame
+{
+	pushScene(new MainMenu())
+}
+
+func getContext as ApplicationContext
+{
+	return context
+}
+
+func getPlayer as PlayerEntity
+{
+	return player
+}
+
+func cleanup override
+{
+	removeAllSprites()
+}
+
+func onPointerEvent(event as PointerEvent) override
+{
+	base.onPointerEvent(event)
+	if(event.isConsumed) {
+		return
+	}
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(left.getX(), left.getY(), left.getWidth(), left.getHeight())) {
+			left.setTextureWithSize(createTextureForImageResource("left_clicked"), 0.125 * width, 0.125 * height)
+			PRINT("LEFT CLICK")
+		}
+		else if (event.isInside(right.getX(), right.getY(), right.getWidth(), right.getHeight())) {
+			right.setTextureWithSize(createTextureForImageResource("right_clicked"), 0.125 * width, 0.125 * height)
+			PRINT("RIGHT CLICK")
+		}
+	}
+	else if(event.action == PointerEvent.UP) {
+		left.setTextureWithSize(createTextureForImageResource("left_unclicked"), 0.125 * width, 0.125 * height)
+		right.setTextureWithSize(createTextureForImageResource("right_unclicked"), 0.125 * width, 0.125 * height)
+	}
+}
+
+// func onKeyEvent(event as KeyEvent)
+// {
+// 	if(event.isKey(KeyEvent.KEY_UP)) {
+// 		pressedUp = true
+// 		PRINT("UP")
+// 	}
+// 	else if(event.isKey(KeyEvent.KEY_DOWN)) {
+// 		pressedDown = true
+// 		PRINT("DOWN")
+// 	}
+// 	else if(event.isKey(KeyEvent.KEY_LEFT)) {
+// 		pressedLeft = true
+// 		PRINT("LEFT")
+// 	}
+// 	else if(event.isKey(KeyEvent.KEY_RIGHT)) {
+// 		pressedRight = true
+// 		PRINT("RIGHT")
+// 	}
+// 	else {
+// 		PRINT("Unhandled key event: `" .. event.getStringValue() .."`")
+// 	}
+// 	if(event.getAction() == 2){
+// 		pressedUp = false
+// 		pressedDown = false
+// 		pressedLeft = false
+// 		pressedRight = false
+// 	}
+// }
+func getLeftButton as TextureSprite
+{
+	return left
+}
+func getRightButton as TextureSprite
+{
+	return right
+}
+
+func tick(gameTime as TimeValue, delta as double) override
+{
+	base.tick(gameTime, delta)
+	// if(pressedLeft || ){
+	// 	sprite.move(sprite.getX() - width * 0.005, sprite.getY())
+	// }
+	// else if(pressedRight){
+	// 	sprite.move(sprite.getX() + width * 0.005, sprite.getY())
+	// }
+}

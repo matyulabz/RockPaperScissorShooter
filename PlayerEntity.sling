@@ -1,0 +1,96 @@
+class is SpriteEntity is KeyListener is PointerListener imports cape imports cave imports motion:
+
+var fire as Texture
+var water as Texture
+var grass as Texture
+var normal as Texture
+var playerSprite as TextureSprite
+var gameScene as GameScene
+var height as double
+var width as double
+var pressedLeft = false
+var pressedRight = false
+
+func createSprite override as Sprite
+{
+	gameScene = getScene() as GameScene
+	width = layer.getReferenceWidth()
+	height = layer.getReferenceHeight()
+	fire = scene.createTextureForImageResource("fire")
+	water = scene.createTextureForImageResource("water")
+	grass = scene.createTextureForImageResource("grass")
+	normal = scene.createTextureForImageResource("normal")
+	playerSprite = SpriteUtil.addTextureSpriteForSize(scene, layer, normal, 0.15 * width, 0.25 * height)
+	playerSprite.move(0.5 * width, height - playerSprite.getHeight() - gameScene.getLeftButton().getHeight())
+	return playerSprite
+}
+
+func cleanup override
+{
+	layer.removeAllSprites()
+}
+
+func onKeyEvent(event as KeyEvent)
+{
+	if(event.isKey(KeyEvent.KEY_LEFT)) {
+		pressedLeft = true
+		PRINT("LEFT")
+	}
+	else if(event.isKey(KeyEvent.KEY_RIGHT)) {
+		pressedRight = true
+		PRINT("RIGHT")
+	}
+	else {
+		PRINT("Unhandled key event: `" .. event.getStringValue() .."`")
+	}
+	if(event.getAction() == 2){
+		pressedLeft = false
+		pressedRight = false
+	}
+}
+func onPointerEvent(event as PointerEvent) as bool
+{
+	if(event.isConsumed) {
+		return false
+	}
+	var leftX = gameScene.getLeftButton().getX()
+	var leftY = gameScene.getLeftButton().getY()
+	var leftW = gameScene.getLeftButton().getWidth()
+	var leftH = gameScene.getLeftButton().getHeight()
+	var rightX = gameScene.getRightButton().getX()
+	var rightY = gameScene.getRightButton().getY()
+	var rightW = gameScene.getRightButton().getWidth()
+	var rightH = gameScene.getRightButton().getHeight()
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(leftX, leftY, leftW, leftH)) {
+			pressedLeft = true
+			PRINT("LEFT CLICK")
+		}
+		else if (event.isInside(rightX, rightY, rightW, rightH)) {
+			pressedRight = true
+			PRINT("RIGHT CLICK")
+		}
+	}
+	else if(event.action == PointerEvent.UP) {
+		pressedLeft = false
+		pressedRight = false
+	}
+	return false
+}
+
+func tick(gameTime as TimeValue, delta as double) override
+{
+	base.tick(gameTime, delta)
+	if(sprite.getX() < 0){
+		sprite.move(0, sprite.getY())
+	}
+	if(sprite.getX() + sprite.getWidth() >= width){
+		sprite.move(width - sprite.getWidth(), sprite.getY())
+	}
+	if(pressedLeft){
+		sprite.move(sprite.getX() - width * 0.005, sprite.getY())
+	}
+	else if(pressedRight){
+		sprite.move(sprite.getX() + width * 0.005, sprite.getY())
+	}
+}

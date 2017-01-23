@@ -1,0 +1,18 @@
+title = "Element Shooter"
+description = "A longer description about Element Shooter"
+copyright = "Copyright (c) ElementShooter"
+license = "All rights reserved"
+version = "1.0.x"
+vendorId = "com.elemshoot"
+resources = [
+	"images"
+]
+depends = [
+	"cape",
+	"cave",
+	"motion"
+]
+preFilters += "@motion"
+compilerOptions = {
+	"html5.readableCode" : "true"
+}
