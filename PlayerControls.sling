@@ -1,0 +1,93 @@
+class is SpriteEntity is PointerListener imports cape imports cave imports motion:
+
+var left as TextureSprite
+var right as TextureSprite
+var rockBtn as TextureSprite
+var paperBtn as TextureSprite
+var scissorsBtn as TextureSprite
+var controlsSprite as TextureSprite
+var gameScene as GameScene
+var height as double
+var width as double
+
+func createSprite override as Sprite
+{
+	gameScene = getScene() as GameScene
+	width = layer.getReferenceWidth()
+	height = layer.getReferenceHeight()
+	left = SpriteUtil.addTextureSpriteForSize(scene, layer, scene.createTextureForImageResource("left_unclicked"), 0.125 * width, 0.125 * height)
+	right = SpriteUtil.addTextureSpriteForSize(scene, layer, scene.createTextureForImageResource("right_unclicked"), 0.125 * width, 0.125 * height)
+	rockBtn = SpriteUtil.addTextureSpriteForSize(scene, layer, scene.createTextureForImageResource("rock_shoot"), 0.125 * width, 0.125 * height)
+	paperBtn = SpriteUtil.addTextureSpriteForSize(scene, layer, scene.createTextureForImageResource("paper_shoot"), 0.125 * width, 0.125 * height)
+	scissorsBtn = SpriteUtil.addTextureSpriteForSize(scene, layer, scene.createTextureForImageResource("scissors_shoot"), 0.125 * width, 0.125 * height)
+	left.move(0, height - left.getHeight())
+	right.move(left.getWidth(), height - left.getHeight())
+	rockBtn.move(width - rockBtn.getWidth(), height - left.getHeight())
+	paperBtn.move(rockBtn.getX() - paperBtn.getWidth(), height - left.getHeight())
+	scissorsBtn.move(paperBtn.getX() - scissorsBtn.getWidth(), height - left.getHeight())
+	return controlsSprite
+}
+
+func cleanup override
+{
+	layer.removeAllSprites()
+}
+
+func getLeftButton as TextureSprite
+{
+	return left
+}
+
+func getRightButton as TextureSprite
+{
+	return right
+}
+
+func getRockButton as TextureSprite
+{
+	return rockBtn
+}
+
+func getPaperButton as TextureSprite
+{
+	return paperBtn
+}
+
+func getScissorsButton as TextureSprite
+{
+	return scissorsBtn
+}
+
+func onPointerEvent(event as PointerEvent) as bool
+{
+	if(event.isConsumed) {
+		return false
+	}
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(left.getX(), left.getY(), left.getWidth(), left.getHeight())) {
+			left.setTextureWithSize(scene.createTextureForImageResource("left_clicked"), 0.125 * width, 0.125 * height)
+			PRINT("LEFT BTN")
+		}
+		else if (event.isInside(right.getX(), right.getY(), right.getWidth(), right.getHeight())) {
+			right.setTextureWithSize(scene.createTextureForImageResource("right_clicked"), 0.125 * width, 0.125 * height)
+			PRINT("RIGHT BTN")
+		}
+		else if (event.isInside(rockBtn.getX(), rockBtn.getY(), rockBtn.getWidth(), rockBtn.getHeight())) {
+			gameScene.shootRock()
+			PRINT("ROCK BTN")
+		}
+		else if (event.isInside(paperBtn.getX(), paperBtn.getY(), paperBtn.getWidth(), paperBtn.getHeight())) {
+			gameScene.shootPaper()
+			PRINT("PAPER BTN")
+		}
+		else if (event.isInside(scissorsBtn.getX(), scissorsBtn.getY(), scissorsBtn.getWidth(), scissorsBtn.getHeight())) {
+			gameScene.shootScissors()
+			PRINT("SCISSORS BTN")
+		}
+	}
+	else if(event.action == PointerEvent.UP) {
+		left.setTextureWithSize(scene.createTextureForImageResource("left_unclicked"), 0.125 * width, 0.125 * height)
+		right.setTextureWithSize(scene.createTextureForImageResource("right_unclicked"), 0.125 * width, 0.125 * height)
+	}
+	return false
+}

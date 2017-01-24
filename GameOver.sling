@@ -1,0 +1,48 @@
+class is SpriteSceneWithEntities imports cape imports cave imports motion:
+
+var height as double
+var width as double
+var gameOverImg as Texture
+var endBg as TextureSprite
+var retryButton as TextButtonEntity
+var backToHomeButton as TextButtonEntity
+
+func initialize override
+{
+	base.initialize()
+	height = getReferenceHeight()
+	width = getReferenceWidth()
+	gameOverImg = createTextureForImageResource("game_over")
+	endBg = addTextureSpriteForSize(gameOverImg, width * 0.5, height * 0.5)
+	endBg.move((endBg.getWidth() * 0.5 + 0), (endBg.getHeight() * 0.5 + 0))
+	retryButton = TextButtonEntity.forText("Retry")
+	retryButton.setBackgroundColor(Color.forRGB(255, 0, 0))
+	backToHomeButton = TextButtonEntity.forText("Back To Home")
+	backToHomeButton.setBackgroundColor(Color.forRGB(255, 0, 0))
+	addEntity(retryButton)
+	addEntity(backToHomeButton)
+	retryButton.move(width * 0.25, height * 0.75)
+	retryButton.setClickHandler(func {
+		retry()
+	})
+	backToHomeButton.move(width * 0.75 - backToHomeButton.getWidth(), height * 0.75)
+	backToHomeButton.setClickHandler(func {
+		backToHome()
+	})
+}
+
+func retry
+{
+	pushScene(new GameScene())
+}
+func backToHome
+{
+	pushScene(new MainMenu())
+}
+
+func cleanup override
+{
+	removeSprite(endBg)
+	removeEntity(retryButton)
+	removeEntity(backToHomeButton)
+}

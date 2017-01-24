@@ -1,0 +1,14 @@
+// class is SpriteSceneWithEntities imports cape imports cave imports motion:
+
+// depend "androidPermission:android.permission.WRITE_EXTERNAL_STORAGE"
+// depend "androidPermission:android.permission.READ_EXTERNAL_STORAGE"
+
+// func initialize override
+// {
+// 	base.initialize()
+// 	var output = FileInstance.forPath("highscore.txt")
+// 	if(output != null){
+// 		output.setContentsString("DUH", "UTF-8")
+// 		PRINT(output.getContentsString("UTF-8"))
+// 	}
+// }

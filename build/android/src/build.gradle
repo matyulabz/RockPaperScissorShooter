@@ -1,0 +1,94 @@
+repositories {
+	jcenter()
+	flatDir {
+		dirs 'libs'
+	}
+}
+
+buildscript {
+	repositories {
+		jcenter()
+		flatDir {
+			dirs 'libs'
+		}
+	}
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0'
+		
+    }
+}
+
+
+
+apply plugin: 'com.android.application'
+
+android.applicationVariants.all { variant ->
+	def fext = "-${variant.name}.apk"
+
+	variant.generateBuildConfig.sourceOutputDir = new File('buildConfig')
+	variant.outputs.each { output ->
+		def file = output.outputFile
+		output.outputFile = new File(file.parent, "com.elemshoot.rpsshooter" + fext)
+	}
+}
+
+android {
+	compileSdkVersion 25
+	buildToolsVersion '25.0.2'
+	
+
+	defaultConfig {
+		minSdkVersion 15
+		targetSdkVersion 25
+		
+		jackOptions {
+			enabled true
+			additionalParameters("jack.import.type.policy" : "keep-first")
+		}
+		
+		
+		applicationId "com.elemshoot.rpsshooter"
+		
+	}
+
+	
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+	
+
+	sourceSets {
+		main {
+			java.srcDirs = ['src']
+			res.srcDirs = ['res']
+			assets.srcDirs = ['assets']
+			jniLibs.srcDirs = ['libs']
+			manifest.srcFile 'AndroidManifest.xml'
+		}
+	}
+	
+
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFile getDefaultProguardFile('proguard-android.txt')
+			
+		}
+	}
+
+	lintOptions {
+		abortOnError false
+	}
+
+	dependencies {
+		compile fileTree(dir: 'libs', include: ['*.jar'])
+		compile(name:'org.jkop.cape', ext:'aar')
+		compile(name:'org.jkop.cave', ext:'aar')
+		compile(name:'org.jkop.motion', ext:'aar')
+		
+		
+		
+	}
+}

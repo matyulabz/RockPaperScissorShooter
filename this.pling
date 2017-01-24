@@ -1,9 +1,9 @@
-title = "Element Shooter"
-description = "A longer description about Element Shooter"
-copyright = "Copyright (c) ElementShooter"
+title = "Rock Paper Scissor Shooter"
+description = "Final Project for Sling Training, Jan 2017"
+copyright = "Copyright (c) RockPaperScissorShooter"
 license = "All rights reserved"
 version = "1.0.x"
-vendorId = "com.elemshoot"
+vendorId = "com.rpsshoot"
 resources = [
 	"images"
 ]

@@ -1,0 +1,96 @@
+class is SpriteEntity imports cape imports cave imports motion:
+
+var rock as Texture
+var paper as Texture
+var scissors as Texture
+var projectile as TextureSprite
+var gameScene as GameScene
+var height as double
+var width as double
+var speed as double
+var x as double
+var y as double
+var type as int
+// var pressedRock = false
+// var pressedPaper = false
+// var pressedScissors = false
+
+ctor(t as int)
+{
+	type = t
+}
+
+func createSprite override as Sprite
+{
+	width = layer.getReferenceWidth()
+	height = layer.getReferenceHeight()
+	gameScene = scene as GameScene
+	speed = 3.5
+	rock = scene.createTextureForImageResource("rock")
+	paper = scene.createTextureForImageResource("paper")
+	scissors = scene.createTextureForImageResource("scissors")
+	x = gameScene.getPlayer().getX() + (0.2 * gameScene.getPlayer().getWidth())
+	y = gameScene.getPlayer().getY()
+	if (type == 1){
+		projectile = SpriteUtil.addTextureSpriteForSize(scene, layer, rock, 0.1 * width, 0.1 * height)
+	}
+	else if(type == 2) {
+		projectile = SpriteUtil.addTextureSpriteForSize(scene, layer, paper, 0.1 * width, 0.1 * height)
+	}
+	else if(type == 3) {
+		projectile = SpriteUtil.addTextureSpriteForSize(scene, layer, scissors, 0.1 * width, 0.1 * height)
+	}
+	projectile.move(x,y)
+	PRINT("SHOOT")
+	return projectile
+}
+
+func cleanup override
+{
+	layer.removeSprite(projectile)
+}
+
+func isCollide(sprA as Sprite, sprB as Sprite) static as bool
+{
+	var collide = false
+	var r1 = sprA.getHeight() * 0.5
+	var r2 = sprA.getWidth() * 0.5
+	var totalR = r1+r2
+	var dx = sprA.getX() - sprB.getX()
+	var dy = sprA.getY() - sprB.getY()
+	var dr = Math.sqrt(dx * dx + dy * dy)
+	if (dr < totalR) {
+		collide = true
+		PRINT("COLLIDED")
+	}
+	return(collide)
+}
+
+func tick(gameTime as TimeValue, delta as double) override
+{
+	base.tick(gameTime, delta)
+	projectile.move(projectile.getX(), projectile.getY() - delta / speed)
+	if(projectile.getY() <= 0)	{
+		gameScene.removeProjectileEntity(this)
+	}
+	// foreach(spr in gameScene.getEnemyEntities()) {
+	// 	if(spr != null) {
+	// 		if(sprite != null) {
+	// 			if (spr.isCollide(sprite, spr)){
+	// 				gameScene.removeProjectileEntity(this)
+	// 			}
+	// 		}
+	// 	}
+	// }
+}
+
+func getProjectile as this
+{
+	return this
+}
+
+func getType as int
+{
+	// PRINT(type)
+	return type
+}

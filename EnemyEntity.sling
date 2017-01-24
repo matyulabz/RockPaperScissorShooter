@@ -1,0 +1,126 @@
+class is SpriteEntity imports cape imports cave imports motion:
+
+var rockEnemy as Texture
+var paperEnemy as Texture
+var scissorsEnemy as Texture
+var enemySprite as TextureSprite
+var gameScene as GameScene
+var type as int
+var speed as double
+var height as double
+var width as double
+var rX as double
+var yspeed as double
+var isBoosted as bool
+
+func createSprite override as Sprite
+{
+	gameScene = getScene() as GameScene
+	width = layer.getReferenceWidth()
+	height = layer.getReferenceHeight()
+	rockEnemy = scene.createTextureForImageResource("enemy_rock")
+	paperEnemy = scene.createTextureForImageResource("enemy_paper")
+	scissorsEnemy = scene.createTextureForImageResource("enemy_scissors")
+	var random = new Random()
+	type = random.nextInt(3)
+	if (type == 1){
+		enemySprite = SpriteUtil.addTextureSpriteForSize(scene, layer, rockEnemy, 0.1 * width, 0.1 * height)
+	}
+	else if(type == 2) {
+		enemySprite = SpriteUtil.addTextureSpriteForSize(scene, layer, paperEnemy, 0.1 * width, 0.1 * height)
+	}
+	else if(type == 3) {
+		enemySprite = SpriteUtil.addTextureSpriteForSize(scene, layer, scissorsEnemy, 0.1 * width, 0.1 * height)
+	}
+	speed = 100
+	isBoosted = false
+	rX = (width - enemySprite.getWidth()) * random.nextDouble()
+	enemySprite.move(rX ,0)
+	return enemySprite
+}
+
+func cleanup override
+{
+	layer.removeSprite(enemySprite)
+}
+
+func accelerate(n as double)
+{
+	yspeed += 0.5 * n
+}
+
+func isCollide(sprA as Sprite, sprB as Sprite) static as bool
+{
+	var collide = false
+	var r1 = sprA.getHeight() * 0.5
+	var r2 = sprA.getWidth() * 0.5
+	var totalR = r1+r2
+	var dx = sprA.getX() - sprB.getX()
+	var dy = sprA.getY() - sprB.getY()
+	var dr = Math.sqrt(dx * dx + dy * dy)
+	if (dr < totalR) {
+		collide = true
+		PRINT("COLLIDED")
+	}
+	return(collide)
+}
+
+func getType as int
+{
+	return type
+}
+
+func tick(gameTime as TimeValue, delta as double) override
+{
+	base.tick(gameTime, delta)
+	if(enemySprite.getY() + enemySprite.getHeight() >= height - 0.5 * gameScene.getPlayer().getHeight())	{
+		gameScene.removeEnemyEntity(this)
+		gameScene.minusLife(1)
+	}
+	foreach(spr in gameScene.getProjectileEntities()) {
+		if(spr != null) {
+			if(sprite != null) {
+				if (isCollide(spr, sprite)){
+					var enemyType = type
+					var playerType = spr.getType()
+					PRINT(enemyType)
+					PRINT(playerType)
+					if (enemyType == 1) {
+						if (playerType == 2) {
+							gameScene.removeEnemyEntity(this)
+							gameScene.addScore()
+						}
+						else if (playerType == 3) {
+							isBoosted = true
+						}
+					}
+					else if (enemyType == 2) {
+						if (playerType == 3) {
+							gameScene.removeEnemyEntity(this)
+							gameScene.addScore()
+						}
+						else if (playerType == 1) {
+							isBoosted = true
+						}
+					}
+					else if (enemyType == 3) {
+						if (playerType == 1) {
+							gameScene.removeEnemyEntity(this)
+							gameScene.addScore()
+						}
+						else if (playerType == 2) {
+							isBoosted = true
+						}
+					}
+				}
+			}
+		}
+	}
+	if (isBoosted){
+		accelerate(delta)
+		enemySprite.move(rX, enemySprite.getY() + yspeed * delta)
+	}
+	else {
+		enemySprite.move(rX, enemySprite.getY() + delta / speed)
+	}
+}

@@ -2,12 +2,21 @@ class is SpriteSceneWithEntities imports cape imports cave imports motion:
 
 var backButton as TextButtonEntity
 var player as PlayerEntity
-var left as TextureSprite
-var right as TextureSprite
+var controls as PlayerControls
+// var enemy as EnemyEntity
+// var rock as ProjectileEntity
+// var paper as ProjectileEntity
+// var scissors as ProjectileEntity
+var score as int
+var life as int
+var scoreSprite as TextSprite
+var lifeSprite as TextSprite
+var projectile as ProjectileEntity
 var height as double
 var width as double
-// var pressedLeft = false
-// var pressedRight = false
+var time as int
+var projectileEntities as vector<ProjectileEntity>
+var enemyEntities as vector<EnemyEntity>
 
 func initialize override
 {
@@ -17,21 +26,75 @@ func initialize override
 	backButton = TextButtonEntity.forText("QUIT")
 	backButton.setBackgroundColor(Color.forRGB(255, 0, 0))
 	addEntity(backButton)
+	time = 0
+	life = 5
+	score = 0
 	backButton.move(0, 0)
 	backButton.setClickHandler(func {
 		quitGame()
 	})
-	left = addTextureSpriteForSize(createTextureForImageResource("left_unclicked"), 0.125 * width, 0.125 * height)
-	right = addTextureSpriteForSize(createTextureForImageResource("right_unclicked"), 0.125 * width, 0.125 * height)
+	projectileEntities = new vector<ProjectileEntity>
+	enemyEntities = new vector<EnemyEntity>
+	controls = new PlayerControls()
+	addEntity(controls)
 	player = new PlayerEntity()
 	addEntity(player)
-	left.move(0, height - left.getHeight())
-	right.move(left.getWidth(), height - left.getHeight())
+	var textProp = TextProperties.forText("Count")
+	textProp.setTextColor(Color.white())
+	textProp.setFontSizeRelative(0.075 * height)
+	textProp.setFontFamily("Times new roman")
+	textProp.setFontIsItalic(true)
+	scoreSprite = addTextSprite(textProp)
+	scoreSprite.move(0.40 * width, height - scoreSprite.getHeight())
+	lifeSprite = addTextSprite(textProp)
+	lifeSprite.move(0.40 * width + scoreSprite.getWidth(), height - scoreSprite.getHeight())
+}
+
+func getScore as int
+{
+	return score
+}
+
+func getLife as int
+{
+	return life
+}
+
+func addScore
+{
+	score++
+}
+
+func minusLife(n as int)
+{
+	life -= n
 }
 
 func quitGame
 {
 	pushScene(new MainMenu())
+}
+
+func removeProjectileEntity(e as ProjectileEntity) as void
+{
+	removeEntity(e)
+	Vector.removeValue(projectileEntities, e)
+}
+
+func removeEnemyEntity(e as EnemyEntity) as void
+{
+	removeEntity(e)
+	Vector.removeValue(enemyEntities, e)
+}
+
+func getProjectileEntities as vector<ProjectileEntity>
+{
+	return projectileEntities
+}
+
+func getEnemyEntities as vector<EnemyEntity>
+{
+	return enemyEntities
 }
 
 func getContext as ApplicationContext
@@ -43,78 +106,54 @@ func getPlayer as PlayerEntity
 {
 	return player
 }
+func getControls as PlayerControls
+{
+	return controls
+}
+
+func getProjectile as ProjectileEntity
+{
+	return projectile
+}
 
 func cleanup override
 {
 	removeAllSprites()
 }
 
-func onPointerEvent(event as PointerEvent) override
+func shootRock
 {
-	base.onPointerEvent(event)
-	if(event.isConsumed) {
-		return
-	}
-	if(event.action == PointerEvent.DOWN) {
-		if(event.isInside(left.getX(), left.getY(), left.getWidth(), left.getHeight())) {
-			left.setTextureWithSize(createTextureForImageResource("left_clicked"), 0.125 * width, 0.125 * height)
-			PRINT("LEFT CLICK")
-		}
-		else if (event.isInside(right.getX(), right.getY(), right.getWidth(), right.getHeight())) {
-			right.setTextureWithSize(createTextureForImageResource("right_clicked"), 0.125 * width, 0.125 * height)
-			PRINT("RIGHT CLICK")
-		}
-	}
-	else if(event.action == PointerEvent.UP) {
-		left.setTextureWithSize(createTextureForImageResource("left_unclicked"), 0.125 * width, 0.125 * height)
-		right.setTextureWithSize(createTextureForImageResource("right_unclicked"), 0.125 * width, 0.125 * height)
-	}
+	var rock = new ProjectileEntity(1)
+	addEntity(rock)
+	projectileEntities += rock
 }
 
-// func onKeyEvent(event as KeyEvent)
-// {
-// 	if(event.isKey(KeyEvent.KEY_UP)) {
-// 		pressedUp = true
-// 		PRINT("UP")
-// 	}
-// 	else if(event.isKey(KeyEvent.KEY_DOWN)) {
-// 		pressedDown = true
-// 		PRINT("DOWN")
-// 	}
-// 	else if(event.isKey(KeyEvent.KEY_LEFT)) {
-// 		pressedLeft = true
-// 		PRINT("LEFT")
-// 	}
-// 	else if(event.isKey(KeyEvent.KEY_RIGHT)) {
-// 		pressedRight = true
-// 		PRINT("RIGHT")
-// 	}
-// 	else {
-// 		PRINT("Unhandled key event: `" .. event.getStringValue() .."`")
-// 	}
-// 	if(event.getAction() == 2){
-// 		pressedUp = false
-// 		pressedDown = false
-// 		pressedLeft = false
-// 		pressedRight = false
-// 	}
-// }
-func getLeftButton as TextureSprite
+func shootPaper
 {
-	return left
+	var paper = new ProjectileEntity(2)
+	addEntity(paper)
+	projectileEntities += paper
 }
-func getRightButton as TextureSprite
+
+func shootScissors
 {
-	return right
+	var scissors = new ProjectileEntity(3)
+	addEntity(scissors)
+	projectileEntities += scissors
 }
 
 func tick(gameTime as TimeValue, delta as double) override
 {
 	base.tick(gameTime, delta)
-	// if(pressedLeft || ){
-	// 	sprite.move(sprite.getX() - width * 0.005, sprite.getY())
-	// }
-	// else if(pressedRight){
-	// 	sprite.move(sprite.getX() + width * 0.005, sprite.getY())
-	// }
+	time++
+	lifeSprite.setText(String.append("LIFE: ", life))
+	scoreSprite.setText(String.append("SCORE: ", score))
+	if ((time % 250) == 0){
+		var enemy = new EnemyEntity()
+		addEntity(enemy)
+		enemyEntities += enemy
+	}
+	if(getLife() == 0){
+		pushScene(new GameOver())
+	}
 }

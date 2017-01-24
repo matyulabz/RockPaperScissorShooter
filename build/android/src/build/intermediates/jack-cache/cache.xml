@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\User\Downloads\OJT FORMS-SUMMER 16\TRAINING\LABTIC_JOHNMATTHEW_SLING_TRAINING_FINAL\rpsshooter\build\android\src\build\intermediates\exploded-aar\org.jkop.cave\jars\classes.jar"
+        revision="25.0.2"
+        sha1="c0e9f4272e88a7600286584bbe1536ea74e1ba81">
+        <dex dex="C:\Users\User\Downloads\OJT FORMS-SUMMER 16\TRAINING\LABTIC_JOHNMATTHEW_SLING_TRAINING_FINAL\rpsshooter\build\android\src\build\intermediates\transforms\preJackPackagedLibraries\debug\jars\8000\1f\classes-b897ed317804a0c53ea1371bce3e88134d4b2bc2.jar" />
+    </item>
+    <item
+        jar="C:\Users\User\Downloads\OJT FORMS-SUMMER 16\TRAINING\LABTIC_JOHNMATTHEW_SLING_TRAINING_FINAL\rpsshooter\build\android\src\build\intermediates\exploded-aar\org.jkop.motion\jars\classes.jar"
+        revision="25.0.2"
+        sha1="c3fbf7ffec8f368e2ee92f3c02f765e9b76c0a3f">
+        <dex dex="C:\Users\User\Downloads\OJT FORMS-SUMMER 16\TRAINING\LABTIC_JOHNMATTHEW_SLING_TRAINING_FINAL\rpsshooter\build\android\src\build\intermediates\transforms\preJackPackagedLibraries\debug\jars\8000\1f\classes-398a06e4c8ee38e9772228bcc9d3fc0c796677e2.jar" />
+    </item>
+    <item
+        jar="C:\Users\User\Downloads\OJT FORMS-SUMMER 16\TRAINING\LABTIC_JOHNMATTHEW_SLING_TRAINING_FINAL\rpsshooter\build\android\src\build\intermediates\exploded-aar\org.jkop.cape\jars\classes.jar"
+        revision="25.0.2"
+        sha1="952938e5257ad4e41e1ef85c0c1a3590dc0f44e7">
+        <dex dex="C:\Users\User\Downloads\OJT FORMS-SUMMER 16\TRAINING\LABTIC_JOHNMATTHEW_SLING_TRAINING_FINAL\rpsshooter\build\android\src\build\intermediates\transforms\preJackPackagedLibraries\debug\jars\8000\1f\classes-c7c34d18a36d37fef9a7f7ee2371598a6fd4e800.jar" />
+    </item>
+
+</items>
