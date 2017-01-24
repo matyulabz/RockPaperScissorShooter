@@ -1,23 +1,24 @@
 class is SpriteSceneWithEntities imports cape imports cave imports motion:
 
 var bg as TextureSprite
-var backButton as TextButtonEntity
+var quitBtn as TextureSprite
 var player as PlayerEntity
 var controls as PlayerControls
-// var enemy as EnemyEntity
-// var rock as ProjectileEntity
-// var paper as ProjectileEntity
-// var scissors as ProjectileEntity
-var score as int
-var life as int
+var projectile as ProjectileEntity
 var scoreSprite as TextSprite
 var lifeSprite as TextSprite
-var projectile as ProjectileEntity
+var score as int
+var life as int
+var time as int
 var height as double
 var width as double
-var time as int
 var projectileEntities as vector<ProjectileEntity>
 var enemyEntities as vector<EnemyEntity>
+var audioManager as AudioManager
+var stream as AudioStream
+var spawnR as AudioClip
+var spawnP as AudioClip
+var spawnS as AudioClip
 
 func initialize override
 {
@@ -26,16 +27,18 @@ func initialize override
 	width = getReferenceWidth()
 	bg = addTextureSpriteForSize(createTextureForImageResource("game_bg"), width, height)
 	bg.move(0, 0)
-	backButton = TextButtonEntity.forText("QUIT")
-	backButton.setBackgroundColor(Color.forRGB(255, 0, 0))
-	addEntity(backButton)
+	audioManager = AudioManager.forApplication(context)
+	if(audioManager != null) {
+		stream = audioManager.getStreamForResource("game_bgm")
+		spawnR = audioManager.getClipForResource("rock_sound")
+		spawnP = audioManager.getClipForResource("paper_sound")
+		spawnS = audioManager.getClipForResource("scissors_sound")
+	}
 	time = 0
 	life = 5
 	score = 0
-	backButton.move(0, 0)
-	backButton.setClickHandler(func {
-		quitGame()
-	})
+	quitBtn = addTextureSpriteForSize(createTextureForImageResource("quit_button_1"), 0.15 * width, 0.1 * height)
+	quitBtn.move(0, 0)
 	projectileEntities = new vector<ProjectileEntity>
 	enemyEntities = new vector<EnemyEntity>
 	controls = new PlayerControls()
@@ -51,6 +54,34 @@ func initialize override
 	scoreSprite.move(0.3 * width, height - scoreSprite.getHeight())
 	lifeSprite = addTextSprite(textProp)
 	lifeSprite.move(0.3 * width + scoreSprite.getWidth(), height - scoreSprite.getHeight())
+	onTimeToPlayStream()
+}
+
+func getContext as ApplicationContext
+{
+	return context
+}
+
+func onTimeToPlaySoundClip(clip as AudioClip)
+{
+	if(clip != null) {
+		clip.play()
+	}
+}
+
+func onTimeToPlayStream
+{
+	if(stream != null) {
+		stream.play()
+		stream.setLooping(true)
+	}
+}
+
+func stopStream
+{
+	if(stream != null) {
+		stream.stop()
+	}
 }
 
 func getScore as int
@@ -73,9 +104,17 @@ func minusLife(n as int)
 	life -= n
 }
 
-func quitGame
+func onPointerEvent(event as PointerEvent) override
 {
-	pushScene(new MainMenu())
+	base.onPointerEvent(event)
+	if(event.isConsumed) {
+		return
+	}
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(quitBtn.getX(), quitBtn.getY(), quitBtn.getWidth(),quitBtn.getHeight())) {
+			pushScene(new MainMenu())
+		}
+	}
 }
 
 func removeProjectileEntity(e as ProjectileEntity) as void
@@ -100,15 +139,11 @@ func getEnemyEntities as vector<EnemyEntity>
 	return enemyEntities
 }
 
-func getContext as ApplicationContext
-{
-	return context
-}
-
 func getPlayer as PlayerEntity
 {
 	return player
 }
+
 func getControls as PlayerControls
 {
 	return controls
@@ -122,12 +157,14 @@ func getProjectile as ProjectileEntity
 func cleanup override
 {
 	removeAllSprites()
+	stopStream()
 }
 
 func shootRock
 {
 	var rock = new ProjectileEntity(1)
 	addEntity(rock)
+	onTimeToPlaySoundClip(spawnR)
 	projectileEntities += rock
 }
 
@@ -135,6 +172,7 @@ func shootPaper
 {
 	var paper = new ProjectileEntity(2)
 	addEntity(paper)
+	onTimeToPlaySoundClip(spawnP)
 	projectileEntities += paper
 }
 
@@ -142,6 +180,7 @@ func shootScissors
 {
 	var scissors = new ProjectileEntity(3)
 	addEntity(scissors)
+	onTimeToPlaySoundClip(spawnS)
 	projectileEntities += scissors
 }
 
@@ -157,6 +196,6 @@ func tick(gameTime as TimeValue, delta as double) override
 		enemyEntities += enemy
 	}
 	if(getLife() == 0){
-		pushScene(new GameOver())
+		pushScene(new GameOver(getScore()))
 	}
 }

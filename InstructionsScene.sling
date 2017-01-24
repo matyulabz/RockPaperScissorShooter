@@ -1,0 +1,58 @@
+class is SpriteSceneWithEntities imports cape imports cave imports motion:
+
+var height as double
+var width as double
+var bg as TextureSprite
+var backToHomeBtn as TextureSprite
+var audioManager as AudioManager
+var stream as AudioStream
+
+func initialize override
+{
+	base.initialize()
+	height = getReferenceHeight()
+	width = getReferenceWidth()
+	audioManager = AudioManager.forApplication(context)
+	if(audioManager != null) {
+		stream = audioManager.getStreamForResource("main_menu_bgm")
+	}
+	bg = addTextureSpriteForSize(createTextureForImageResource("instructions_bg"), width, height)
+	bg.move(0, 0)
+	backToHomeBtn = addTextureSpriteForSize(createTextureForImageResource("home_button_1"), 0.3 * width, 0.125 * height)
+	backToHomeBtn.move(width - backToHomeBtn.getWidth(), height - backToHomeBtn.getHeight())
+	onTimeToPlayStream()
+}
+
+func onTimeToPlayStream
+{
+	if(stream != null) {
+		stream.play()
+		stream.setLooping(true)
+	}
+}
+
+func stopStream
+{
+	if(stream != null) {
+		stream.stop()
+	}
+}
+
+func cleanup override
+{
+	removeAllSprites()
+	stopStream()
+}
+
+func onPointerEvent(event as PointerEvent) override
+{
+	base.onPointerEvent(event)
+	if(event.isConsumed) {
+		return
+	}
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(backToHomeBtn.getX(), backToHomeBtn.getY(), backToHomeBtn.getWidth(), backToHomeBtn.getHeight())) {
+			pushScene(new MainMenu())
+		}
+	}
+}

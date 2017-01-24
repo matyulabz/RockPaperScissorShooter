@@ -1,32 +1,64 @@
 class is SpriteSceneWithEntities imports cape imports cave imports motion #mainScene:
 
 var bg as TextureSprite
-var playButton as TextButtonEntity
 var height as double
 var width as double
+var playBtn as TextureSprite
+var instructionsBtn as TextureSprite
+var audioManager as AudioManager
+var stream as AudioStream
 
 func initialize override
 {
 	base.initialize()
 	height = getReferenceHeight()
 	width = getReferenceWidth()
+	audioManager = AudioManager.forApplication(context)
+	if(audioManager != null) {
+		stream = audioManager.getStreamForResource("main_menu_bgm")
+	}
 	bg = addTextureSpriteForSize(createTextureForImageResource("main_bg"), width, height)
 	bg.move(0, 0)
-	playButton = TextButtonEntity.forText("PLAY")
-	playButton.setBackgroundColor(Color.forRGB(255, 0, 0))
-	addEntity(playButton)
-	playButton.move(0.5 * width - playButton.getWidth() * 0.5, 0.75 * height)
-	playButton.setClickHandler(func {
-		startGame()
-	})
+	playBtn = addTextureSpriteForSize(createTextureForImageResource("play_button_1"), 0.18 * width, 0.125 * height)
+	instructionsBtn = addTextureSpriteForSize(createTextureForImageResource("instructions_button_1"), 0.3 * width, 0.125 * height)
+	playBtn.move(0.6 * width, height * 0.8)
+	instructionsBtn.move(0.33 * width - (instructionsBtn.getWidth() * 0.5), height * 0.8)
+	onTimeToPlayStream()
 }
 
-func startGame
+func onTimeToPlayStream
 {
-	pushScene(new GameScene())
+	if(stream != null) {
+		stream.play()
+		stream.setLooping(true)
+	}
+}
+
+func stopStream
+{
+	if(stream != null) {
+		stream.stop()
+	}
 }
 
 func cleanup override
 {
 	removeAllSprites()
+	stopStream()
+}
+
+func onPointerEvent(event as PointerEvent) override
+{
+	base.onPointerEvent(event)
+	if(event.isConsumed) {
+		return
+	}
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(playBtn.getX(), playBtn.getY(), playBtn.getWidth(), playBtn.getHeight())) {
+			pushScene(new GameScene())
+		}
+		else if (event.isInside(instructionsBtn.getX(), instructionsBtn.getY(), instructionsBtn.getWidth(), instructionsBtn.getHeight())) {
+			pushScene(new InstructionsScene())
+		}
+	}
 }

@@ -12,12 +12,24 @@ var width as double
 var rX as double
 var yspeed as double
 var isBoosted as bool
+var audioManager as AudioManager
+var lose as AudioClip
+var win as AudioClip
+var draw as AudioClip
+var dropped as AudioClip
 
 func createSprite override as Sprite
 {
 	gameScene = getScene() as GameScene
 	width = layer.getReferenceWidth()
 	height = layer.getReferenceHeight()
+	audioManager = AudioManager.forApplication(gameScene.getContext())
+	if(audioManager != null) {
+		lose = audioManager.getClipForResource("lose_sound")
+		win = audioManager.getClipForResource("win_sound")
+		dropped = audioManager.getClipForResource("dropped_sound")
+		draw = audioManager.getClipForResource("x")
+	}
 	rockEnemy = scene.createTextureForImageResource("enemy_rock")
 	paperEnemy = scene.createTextureForImageResource("enemy_paper")
 	scissorsEnemy = scene.createTextureForImageResource("enemy_scissors")
@@ -32,11 +44,18 @@ func createSprite override as Sprite
 	else if(type == 3) {
 		enemySprite = SpriteUtil.addTextureSpriteForSize(scene, layer, scissorsEnemy, 0.1 * width, 0.1 * height)
 	}
-	speed = 100
+	speed = 10
 	isBoosted = false
-	rX = (width - enemySprite.getWidth()) * random.nextDouble()
-	enemySprite.move(rX ,0)
+	rX = width * random.nextDouble()
+	enemySprite.move(rX - enemySprite.getWidth() ,0)
 	return enemySprite
+}
+
+func onTimeToPlaySoundClip(clip as AudioClip)
+{
+	if(clip != null) {
+		clip.play()
+	}
 }
 
 func cleanup override
@@ -60,9 +79,13 @@ func isCollide(sprA as Sprite, sprB as Sprite) static as bool
 	var dr = Math.sqrt(dx * dx + dy * dy)
 	if (dr < totalR) {
 		collide = true
-		PRINT("COLLIDED")
 	}
 	return(collide)
+}
+
+func getEnemy as this
+{
+	return this
 }
 
 func getType as int
@@ -73,9 +96,10 @@ func getType as int
 func tick(gameTime as TimeValue, delta as double) override
 {
 	base.tick(gameTime, delta)
-	if(enemySprite.getY() + enemySprite.getHeight() >= height - 0.5 * gameScene.getPlayer().getHeight())	{
+	if(enemySprite.getY() + enemySprite.getHeight() >= height - 0.5 * gameScene.getPlayer().getHeight()) {
 		gameScene.removeEnemyEntity(this)
 		gameScene.minusLife(1)
+		onTimeToPlaySoundClip(dropped)
 	}
 	foreach(spr in gameScene.getProjectileEntities()) {
 		if(spr != null) {
@@ -83,33 +107,46 @@ func tick(gameTime as TimeValue, delta as double) override
 				if (isCollide(spr, sprite)){
 					var enemyType = type
 					var playerType = spr.getType()
-					PRINT(enemyType)
-					PRINT(playerType)
 					if (enemyType == 1) {
 						if (playerType == 2) {
-							gameScene.removeEnemyEntity(this)
 							gameScene.addScore()
+							gameScene.removeEnemyEntity(this)
+							onTimeToPlaySoundClip(win)
 						}
 						else if (playerType == 3) {
 							isBoosted = true
+							onTimeToPlaySoundClip(lose)
+						}
+						else {
+							onTimeToPlaySoundClip(draw)
 						}
 					}
 					else if (enemyType == 2) {
 						if (playerType == 3) {
-							gameScene.removeEnemyEntity(this)
 							gameScene.addScore()
+							gameScene.removeEnemyEntity(this)
+							onTimeToPlaySoundClip(win)
 						}
 						else if (playerType == 1) {
 							isBoosted = true
+							onTimeToPlaySoundClip(lose)
+						}
+						else{
+							onTimeToPlaySoundClip(draw)
 						}
 					}
 					else if (enemyType == 3) {
 						if (playerType == 1) {
-							gameScene.removeEnemyEntity(this)
 							gameScene.addScore()
+							gameScene.removeEnemyEntity(this)
+							onTimeToPlaySoundClip(win)
 						}
 						else if (playerType == 2) {
 							isBoosted = true
+							onTimeToPlaySoundClip(lose)
+						}
+						else {
+							onTimeToPlaySoundClip(draw)
 						}
 					}
 				}

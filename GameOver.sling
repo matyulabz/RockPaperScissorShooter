@@ -2,51 +2,78 @@ class is SpriteSceneWithEntities imports cape imports cave imports motion:
 
 var height as double
 var width as double
-var gameOverImg as Texture
 var bg as TextureSprite
-var endSprite as TextureSprite
-var retryButton as TextButtonEntity
-var backToHomeButton as TextButtonEntity
+var retryBtn as TextureSprite
+var backToHomeBtn as TextureSprite
+var audioManager as AudioManager
+var stream as AudioStream
+var score as int
+var scoreSprite as TextSprite
+
+ctor(s as int)
+{
+	score = s
+}
 
 func initialize override
 {
 	base.initialize()
 	height = getReferenceHeight()
 	width = getReferenceWidth()
-	bg = addTextureSpriteForSize(createTextureForImageResource("game_bg"), width, height)
-	gameOverImg = createTextureForImageResource("game_over")
+	bg = addTextureSpriteForSize(createTextureForImageResource("game_over_bg"), width, height)
 	bg.move(0, 0)
-	retryButton = TextButtonEntity.forText("Retry")
-	retryButton.setBackgroundColor(Color.forRGB(255, 0, 0))
-	backToHomeButton = TextButtonEntity.forText("Back To Home")
-	backToHomeButton.setBackgroundColor(Color.forRGB(255, 0, 0))
-	endSprite = addTextureSpriteForSize(gameOverImg, 0.5 * width, height * 0.5)
-	endSprite.move((0.5 * width) - (endSprite.getWidth() * 0.5), 0)
-	addEntity(retryButton)
-	addEntity(backToHomeButton)
-	retryButton.move(width * 0.25, height * 0.75)
-	retryButton.setClickHandler(func {
-		retry()
-	})
-	backToHomeButton.move(width * 0.75 - backToHomeButton.getWidth(), height * 0.75)
-	backToHomeButton.setClickHandler(func {
-		backToHome()
-	})
+	audioManager = AudioManager.forApplication(context)
+	if(audioManager != null) {
+		stream = audioManager.getStreamForResource("game_over")
+	}
+	var textProp = TextProperties.forText("Count")
+	textProp.setTextColor(Color.white())
+	textProp.setFontSizeRelative(0.075 * height)
+	textProp.setFontFamily("Times new roman")
+	textProp.setFontIsItalic(true)
+	scoreSprite = addTextSprite(textProp)
+	scoreSprite.setText(String.append("FINAL SCORE: ", score))
+	backToHomeBtn = addTextureSpriteForSize(createTextureForImageResource("home_button_1"), 0.3 * width, 0.125 * height)
+	backToHomeBtn.move(width - backToHomeBtn.getWidth(), height - backToHomeBtn.getHeight())
+	retryBtn = addTextureSpriteForSize(createTextureForImageResource("retry_button_1"), 0.3 * width, 0.125 * height)
+	retryBtn.move(width * 0.5 - retryBtn.getWidth() * 0.5, height * 0.6 - retryBtn.getHeight())
+	scoreSprite.move(0.5 * width - scoreSprite.getWidth() * 0.5, (height * 0.6 - retryBtn.getHeight()) + (0.125 * height))
+	onTimeToPlayStream()
 }
 
-func retry
+func onTimeToPlayStream
 {
-	pushScene(new GameScene())
+	if(stream != null) {
+		stream.play()
+		stream.setLooping(true)
+	}
 }
-func backToHome
+
+func stopStream
 {
-	pushScene(new MainMenu())
+	if(stream != null) {
+		stream.stop()
+	}
 }
 
 func cleanup override
 {
-	removeSprite(endSprite)
-	removeSprite(bg)
-	removeEntity(retryButton)
-	removeEntity(backToHomeButton)
+	removeAllSprites()
+	stopStream()
+}
+
+func onPointerEvent(event as PointerEvent) override
+{
+	base.onPointerEvent(event)
+	if(event.isConsumed) {
+		return
+	}
+	if(event.action == PointerEvent.DOWN) {
+		if(event.isInside(backToHomeBtn.getX(), backToHomeBtn.getY(), backToHomeBtn.getWidth(), backToHomeBtn.getHeight())) {
+			pushScene(new MainMenu())
+		}
+		else if(event.isInside(retryBtn.getX(), retryBtn.getY(), retryBtn.getWidth(), retryBtn.getHeight())) {
+			pushScene(new GameScene())
+		}
+	}
 }
