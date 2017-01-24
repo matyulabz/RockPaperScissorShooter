@@ -10,7 +10,7 @@ func initialize override
 	base.initialize()
 	height = getReferenceHeight()
 	width = getReferenceWidth()
-	bg = addTextureSpriteForSize(createTextureForImageResource("main-bg"), width, height)
+	bg = addTextureSpriteForSize(createTextureForImageResource("main_bg"), width, height)
 	bg.move(0, 0)
 	playButton = TextButtonEntity.forText("PLAY")
 	playButton.setBackgroundColor(Color.forRGB(255, 0, 0))

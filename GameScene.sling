@@ -1,5 +1,6 @@
 class is SpriteSceneWithEntities imports cape imports cave imports motion:
 
+var bg as TextureSprite
 var backButton as TextButtonEntity
 var player as PlayerEntity
 var controls as PlayerControls
@@ -23,6 +24,8 @@ func initialize override
 	base.initialize()
 	height = getReferenceHeight()
 	width = getReferenceWidth()
+	bg = addTextureSpriteForSize(createTextureForImageResource("game_bg"), width, height)
+	bg.move(0, 0)
 	backButton = TextButtonEntity.forText("QUIT")
 	backButton.setBackgroundColor(Color.forRGB(255, 0, 0))
 	addEntity(backButton)
@@ -45,9 +48,9 @@ func initialize override
 	textProp.setFontFamily("Times new roman")
 	textProp.setFontIsItalic(true)
 	scoreSprite = addTextSprite(textProp)
-	scoreSprite.move(0.40 * width, height - scoreSprite.getHeight())
+	scoreSprite.move(0.3 * width, height - scoreSprite.getHeight())
 	lifeSprite = addTextSprite(textProp)
-	lifeSprite.move(0.40 * width + scoreSprite.getWidth(), height - scoreSprite.getHeight())
+	lifeSprite.move(0.3 * width + scoreSprite.getWidth(), height - scoreSprite.getHeight())
 }
 
 func getScore as int

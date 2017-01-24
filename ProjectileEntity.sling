@@ -29,7 +29,7 @@ func createSprite override as Sprite
 	rock = scene.createTextureForImageResource("rock")
 	paper = scene.createTextureForImageResource("paper")
 	scissors = scene.createTextureForImageResource("scissors")
-	x = gameScene.getPlayer().getX() + (0.2 * gameScene.getPlayer().getWidth())
+	x = gameScene.getPlayer().getX()
 	y = gameScene.getPlayer().getY()
 	if (type == 1){
 		projectile = SpriteUtil.addTextureSpriteForSize(scene, layer, rock, 0.1 * width, 0.1 * height)

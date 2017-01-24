@@ -13,8 +13,8 @@ func createSprite override as Sprite
 	gameScene = getScene() as GameScene
 	width = layer.getReferenceWidth()
 	height = layer.getReferenceHeight()
-	normal = scene.createTextureForImageResource("normal")
-	playerSprite = SpriteUtil.addTextureSpriteForSize(scene, layer, normal, 0.15 * width, 0.15 * height)
+	normal = scene.createTextureForImageResource("target")
+	playerSprite = SpriteUtil.addTextureSpriteForSize(scene, layer, normal, 0.1 * width, 0.1 * height)
 	playerSprite.move(0.5 * width, height - playerSprite.getHeight() - gameScene.getControls().getLeftButton().getHeight())
 	return playerSprite
 }
